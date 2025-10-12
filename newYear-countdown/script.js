@@ -2,8 +2,9 @@ const timerDays = document.querySelector("#timerDays");
 const timerTime = document.querySelector("#timerTime");
 const timerPercentage = document.querySelector("#timerPercentage");
 
-let oldDate = new Date("2025-01-01 00:00:00");
-let futureDate = new Date("2026-01-01 00:00:00");
+const currentDate = new Date();
+let oldDate = new Date(`${currentDate.getFullYear()}-01-01 00:00:00`);
+let futureDate = new Date(`${currentDate.getFullYear() + 1}-01-01 00:00:00`);
 
 function updateTime() {
   const currentDate = new Date();
