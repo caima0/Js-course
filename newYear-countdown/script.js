@@ -24,17 +24,15 @@ function updateTime() {
   const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
   const seconds = Math.floor((diffMs / 1000) % 60);
-  console.log(seconds);
 
   const formattedDays = days.toString().padStart(2, "0");
   const formattedHours = hours.toString().padStart(2, "0");
   const formattedMinutes = minutes.toString().padStart(2, "0");
   const formattedSeconds = seconds.toString().padStart(2, "0");
-  const formattedPercentage = percentage.toString().padStart(2, "0");
 
   timerTime.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   timerDays.textContent = `${formattedDays} days`;
-  timerPercentage.textContent = `${formattedPercentage} %`;
+  timerPercentage.textContent = `${percentage} %`;
 }
 
 setInterval(updateTime, 1000);
