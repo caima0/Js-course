@@ -17,9 +17,8 @@ function updateTime() {
     futureDate = new Date(`${currentDate.getFullYear() + 1}-01-01 00:00:00`);
     diffMs = futureDate - currentDate;
     timeSpent = currentDate - oldDate;
-    percentage = (timeSpent / 31556926) * 100;
+    percentage = Math.floor((timeSpent / totalTime) * 100);
   }
-
   const days = Math.floor(diffMs / 1000 / 60 / 60 / 24);
   const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
