@@ -53,7 +53,7 @@ function createItem(item) {
   checkbox.className = "checkbox mr-2";
 
   checkbox.addEventListener("click", () => {
-    const index = items.findIndex((i) => i.id === item.id);
+    const index = item.id;
     items[index].isCompleted = checkbox.checked;
   });
 
@@ -67,7 +67,7 @@ function createItem(item) {
   deleteBtn.textContent = "Delete";
 
   deleteBtn.addEventListener("click", () => {
-    const index = items.findIndex((i) => i.id === item.id);
+    const index = item.id;
     items.splice(index, 1);
 
     listItemElem.remove();
@@ -102,7 +102,6 @@ refs.search.addEventListener("input", (e) => {
 
 refs.addBtn.addEventListener("click", () => {
   const text = refs.newItemInput.value;
-  if (!text) return;
 
   addItem(text);
   renderItems(items);
