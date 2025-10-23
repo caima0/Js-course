@@ -3,15 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timer</title>
-    <link rel="stylesheet" href="index.css" />
+    <title>Todo App</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
   </head>
   <body>
-    <div class="timer">
-      <p class="timer-days" id="timerDays">0 days</p>
-      <p class="timer-time" id="timerTime">00:00:00</p>
-      <p class="timer-percentage" id="timerPercentage">0%</p>
-    </div>
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-1">Todo App</h1>
+        <h2 class="title is-2">Create new task</h2>
+
+        <div class="container is-inline-flex">
+          <input
+            class="input is-medium mr-3"
+            type="text"
+            id="new__item-text"
+            placeholder="Create new task"
+          />
+          <button class="button is-primary" type="button" id="add-btn">
+            Add
+          </button>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="container is-inline-flex is-align-items-center mb-3">
+          <input
+            class="input is-medium mr-3"
+            type="text"
+            id="searchInput"
+            placeholder="Search..."
+          />
+          <button class="button is-medium" type="button" id="export-btn">
+            Export
+          </button>
+        </div>
+      </div>
+      <div class="container">
+        <ul id="list"></ul>
+      </div>
+    </section>
 
     <script src="script.js"></script>
   </body>

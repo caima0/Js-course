@@ -1,39 +1,114 @@
-const timerDays = document.querySelector("#timerDays");
-const timerTime = document.querySelector("#timerTime");
-const timerPercentage = document.querySelector("#timerPercentage");
+const refs = {
+  search: document.querySelector("#searchInput"),
+  list: document.querySelector("#list"),
+  addBtn: document.querySelector("#add-btn"),
+  newItemInput: document.querySelector("#new__item-text"),
+  expBtn: document.querySelector("#export-btn"),
+};
 
-const currentDate = new Date();
-let oldDate = new Date(`${currentDate.getFullYear()}-01-01 00:00:00`);
-let futureDate = new Date(`${currentDate.getFullYear() + 1}-01-01 00:00:00`);
+const items = [
+  {
+    id: 1,
+    text: "Купити Лимони",
+    isCompleted: false,
+  },
+  {
+    id: 2,
+    text: "Почистити Апельсин",
+    isCompleted: false,
+  },
+  {
+    id: 3,
+    text: "Повністю вивчити JavaScript",
+    isCompleted: false,
+  },
+];
 
-function updateTime() {
-  const currentDate = new Date();
+let lastId = items[items.length - 1].id;
 
-  const diffMs = futureDate - currentDate;
-  const totalTime = futureDate - oldDate;
-  const timeSpent = currentDate - oldDate;
-  const percentage = Math.floor((timeSpent / totalTime) * 100);
-  if (diffMs <= 0) {
-    oldDate = new Date(`${currentDate.getFullYear()}-01-01 00:00:00`);
-    futureDate = new Date(`${currentDate.getFullYear() + 1}-01-01 00:00:00`);
-    diffMs = futureDate - currentDate;
-    timeSpent = currentDate - oldDate;
-    percentage = Math.floor((timeSpent / totalTime) * 100);
-  }
-  const days = Math.floor(diffMs / 1000 / 60 / 60 / 24);
-  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
-  const seconds = Math.floor((diffMs / 1000) % 60);
+function addItem(text) {
+  lastId++;
 
-  const formattedDays = days.toString().padStart(2, "0");
-  const formattedHours = hours.toString().padStart(2, "0");
-  const formattedMinutes = minutes.toString().padStart(2, "0");
-  const formattedSeconds = seconds.toString().padStart(2, "0");
+  const newItem = {
+    id: lastId,
+    text,
+    isCompleted: false,
+  };
 
-  timerTime.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-  timerDays.textContent = `${formattedDays} days`;
-  timerPercentage.textContent = `${percentage} %`;
+  items.push(newItem);
+
+  return newItem;
 }
 
-setInterval(updateTime, 1000);
-updateTime();
+function createItem(item) {
+  const listItemElem = document.createElement("li");
+  listItemElem.className =
+    "box is-flex is-align-items-center is-justify-content-space-between";
+
+  const leftDiv = document.createElement("div");
+  leftDiv.className = "is-flex is-align-items-center";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "checkbox mr-2";
+
+  checkbox.addEventListener("click", () => {
+    const index = items.findIndex((i) => i.id === item.id);
+    items[index].isCompleted = checkbox.checked;
+  });
+
+  const textP = document.createElement("p");
+  textP.textContent = item.text;
+
+  leftDiv.append(checkbox, textP);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "button is-medium is-danger";
+  deleteBtn.textContent = "Delete";
+
+  deleteBtn.addEventListener("click", () => {
+    const index = items.findIndex((i) => i.id === item.id);
+    items.splice(index, 1);
+
+    listItemElem.remove();
+  });
+
+  listItemElem.append(leftDiv, deleteBtn);
+  return listItemElem;
+}
+
+function renderItems(filteredItems) {
+  refs.list.innerHTML = "";
+  for (const item of filteredItems) {
+    const itemElem = createItem(item);
+    refs.list.append(itemElem);
+  }
+}
+
+renderItems(items);
+
+refs.search.addEventListener("input", (e) => {
+  const inputText = e.currentTarget.value;
+
+  const filteredItems = [];
+  for (const item of items) {
+    const match = item.text.toLowerCase().includes(inputText.toLowerCase());
+    if (match) {
+      filteredItems.push(item);
+    }
+  }
+  renderItems(filteredItems);
+});
+
+refs.addBtn.addEventListener("click", () => {
+  const text = refs.newItemInput.value;
+  if (!text) return;
+
+  addItem(text);
+  renderItems(items);
+  refs.newItemInput.value = "";
+});
+
+refs.expBtn.addEventListener("click", () => {
+  console.log(items);
+});
