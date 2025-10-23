@@ -53,7 +53,7 @@ function createItem(item) {
   checkbox.className = "checkbox mr-2";
 
   checkbox.addEventListener("click", () => {
-    const index = item.id;
+    const index = items.findIndex((i) => i.id === item.id);
     items[index].isCompleted = checkbox.checked;
   });
 
@@ -67,7 +67,7 @@ function createItem(item) {
   deleteBtn.textContent = "Delete";
 
   deleteBtn.addEventListener("click", () => {
-    const index = item.id;
+    const index = items.findIndex((i) => i.id === item.id);
     items.splice(index, 1);
 
     listItemElem.remove();
