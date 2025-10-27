@@ -6,7 +6,7 @@ const refs = {
   expBtn: document.querySelector("#export-btn"),
 };
 
-const items = [
+let items = [
   {
     id: 1,
     text: "Купити Лимони",
@@ -42,38 +42,33 @@ function addItem(text) {
 
 function createItem(item) {
   const listItemElem = document.createElement("li");
+  listItemElem.dataset.itemid = item.id;
   listItemElem.className =
-    "box is-flex is-align-items-center is-justify-content-space-between";
+    "box is-flex is-align-items-center is-justify-content-space-between js-list-item";
 
   const leftDiv = document.createElement("div");
   leftDiv.className = "is-flex is-align-items-center";
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.className = "checkbox mr-2";
-
-  checkbox.addEventListener("click", () => {
-    const index = items.findIndex((i) => i.id === item.id);
-    items[index].isCompleted = checkbox.checked;
-  });
+  checkbox.className = "checkbox mr-2 js-item-checkbox";
+  checkbox.checked = item.isCompleted;
 
   const textP = document.createElement("p");
   textP.textContent = item.text;
 
   leftDiv.append(checkbox, textP);
 
+  const actionsElem = document.createElement("div");
+
   const deleteBtn = document.createElement("button");
-  deleteBtn.className = "button is-medium is-danger";
+  deleteBtn.className = "button is-medium is-danger js-delete-btn";
   deleteBtn.textContent = "Delete";
 
-  deleteBtn.addEventListener("click", () => {
-    const index = items.findIndex((i) => i.id === item.id);
-    items.splice(index, 1);
+  actionsElem.append(deleteBtn);
 
-    listItemElem.remove();
-  });
+  listItemElem.append(leftDiv, actionsElem);
 
-  listItemElem.append(leftDiv, deleteBtn);
   return listItemElem;
 }
 
@@ -86,6 +81,17 @@ function renderItems(filteredItems) {
 }
 
 renderItems(items);
+
+function updateItem(itemId, isCompleted) {
+  items = items.map((item) => {
+    if (item.id === itemId) {
+      return { ...item, isCompleted };
+    }
+    return item;
+  });
+
+  renderItems(items);
+}
 
 refs.search.addEventListener("input", (e) => {
   const inputText = e.currentTarget.value;
@@ -100,14 +106,61 @@ refs.search.addEventListener("input", (e) => {
   renderItems(filteredItems);
 });
 
-refs.addBtn.addEventListener("click", () => {
+function handelAdd() {
   const text = refs.newItemInput.value;
 
   addItem(text);
   renderItems(items);
   refs.newItemInput.value = "";
+}
+
+function deleteItem(itemId) {
+  const index = items.findIndex((item) => item.id === itemId);
+  items.splice(index, 1);
+  renderItems(items);
+}
+
+function handleDeleteClick(e) {
+  const listItemElem = e.target.closest(".js-list-item");
+  const itemId = Number(listItemElem.dataset.itemid);
+  deleteItem(itemId);
+}
+
+refs.list.addEventListener("click", (e) => {
+  if (e.target.classList.contains("js-delete-btn")) {
+    handleDeleteClick(e);
+  }
+});
+
+refs.addBtn.addEventListener("click", handelAdd);
+
+function handleCheckboxChange(e) {
+  const checked = e.target.checked;
+  const listItemElem = e.target.closest(".js-list-item");
+  const itemId = Number(listItemElem.dataset.itemid);
+  updateItem(itemId, checked);
+}
+
+refs.list.addEventListener("click", (e) => {
+  if (e.target.classList.contains("js-item-checkbox")) {
+    handleCheckboxChange(e);
+  }
 });
 
 refs.expBtn.addEventListener("click", () => {
   console.log(items);
 });
+
+function handleKeyDown(e) {
+  if (e.code === "KeyS" && e.ctrlKey) {
+    e.preventDefault();
+    handelAdd();
+  }
+}
+
+function setupShortCuts() {
+  window.removeEventListener("keydown", handleKeyDown);
+  window.addEventListener("keydown", handleKeyDown);
+}
+
+setupShortCuts();
