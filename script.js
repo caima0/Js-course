@@ -115,8 +115,7 @@ function handelAdd() {
 }
 
 function deleteItem(itemId) {
-  const index = items.findIndex((item) => item.id === itemId);
-  items.splice(index, 1);
+  items = items.filter((item) => item.id !== itemId);
   renderItems(items);
 }
 
