@@ -1,165 +1,127 @@
-const refs = {
-  search: document.querySelector("#searchInput"),
-  list: document.querySelector("#list"),
-  addBtn: document.querySelector("#add-btn"),
-  newItemInput: document.querySelector("#new__item-text"),
-  expBtn: document.querySelector("#export-btn"),
-};
-
-let items = [
+const cooks = [
   {
-    id: 1,
-    text: "Купити Лимони",
-    isCompleted: false,
+    name: "Gordon Ramsay",
+    multiplier: 2,
   },
   {
-    id: 2,
-    text: "Почистити Апельсин",
-    isCompleted: false,
+    name: "Jamie Oliver",
+    multiplier: 1.5,
   },
   {
-    id: 3,
-    text: "Повністю вивчити JavaScript",
-    isCompleted: false,
+    name: "Nigella Lawson",
+    multiplier: 1.2,
+  },
+  {
+    name: "Heston Blumenthal",
+    multiplier: 1.1,
   },
 ];
 
-let lastId = items[items.length - 1].id;
+const recipes = [
+  {
+    name: "Beef Wellington",
+    cook: "Gordon Ramsay",
+    time: 10,
+  },
+  {
+    name: "Scrambled Eggs",
+    cook: "Gordon Ramsay",
+    time: 20,
+  },
+  {
+    name: "Pasta Carbonara",
+    cook: "Jamie Oliver",
+    time: 30,
+  },
+  {
+    name: "Chicken Fajitas",
+    cook: "Jamie Oliver",
+    time: 20,
+  },
+  {
+    name: "Chocolate Cake",
+    cook: "Nigella Lawson",
+    time: 35,
+  },
+  {
+    name: "Roast Chicken",
+    cook: "Nigella Lawson",
+    time: 45,
+  },
+  {
+    name: "Molecular Gastronomy Salad",
+    cook: "Heston Blumenthal",
+    time: 40,
+  },
+  {
+    name: "Triple Cooked Chips",
+    cook: "Heston Blumenthal",
+    time: 60,
+  },
+];
 
-function addItem(text) {
-  lastId++;
-
-  const newItem = {
-    id: lastId,
-    text,
-    isCompleted: false,
-  };
-
-  items.push(newItem);
-
-  return newItem;
-}
-
-function createItem(item) {
-  const listItemElem = document.createElement("li");
-  listItemElem.dataset.itemid = item.id;
-  listItemElem.className =
-    "box is-flex is-align-items-center is-justify-content-space-between js-list-item";
-
-  const leftDiv = document.createElement("div");
-  leftDiv.className = "is-flex is-align-items-center";
-
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.className = "checkbox mr-2 js-item-checkbox";
-  checkbox.checked = item.isCompleted;
-
-  const textP = document.createElement("p");
-  textP.textContent = item.text;
-
-  leftDiv.append(checkbox, textP);
-
-  const actionsElem = document.createElement("div");
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "button is-medium is-danger js-delete-btn";
-  deleteBtn.textContent = "Delete";
-
-  actionsElem.append(deleteBtn);
-
-  listItemElem.append(leftDiv, actionsElem);
-
-  return listItemElem;
-}
-
-function renderItems(filteredItems) {
-  refs.list.innerHTML = "";
-  for (const item of filteredItems) {
-    const itemElem = createItem(item);
-    refs.list.append(itemElem);
+function getCookByRecipe(recipeName) {
+  const recipe = recipes.find(
+    (recipe) => recipe.name.toLowerCase() === recipeName.toLowerCase()
+  );
+  if (recipe) {
+    return cooks.find((cook) => cook.name === recipe.cook);
   }
+  return null;
 }
 
-renderItems(items);
-
-function updateItem(itemId, isCompleted) {
-  items = items.map((item) => {
-    if (item.id === itemId) {
-      return { ...item, isCompleted };
-    }
-    return item;
-  });
-
-  renderItems(items);
-}
-
-refs.search.addEventListener("input", (e) => {
-  const inputText = e.currentTarget.value;
-
-  const filteredItems = [];
-  for (const item of items) {
-    const match = item.text.toLowerCase().includes(inputText.toLowerCase());
-    if (match) {
-      filteredItems.push(item);
+function getAdjustedCookingTime(recipeName) {
+  const recipe = recipes.find(
+    (recipe) => recipe.name.toLowerCase() === recipeName.toLowerCase()
+  );
+  if (recipe) {
+    const cook = getCookByRecipe(recipeName);
+    if (cook) {
+      return recipe.time / cook.multiplier;
     }
   }
-  renderItems(filteredItems);
-});
-
-function handelAdd() {
-  const text = refs.newItemInput.value;
-
-  addItem(text);
-  renderItems(items);
-  refs.newItemInput.value = "";
+  return null;
 }
 
-function deleteItem(itemId) {
-  items = items.filter((item) => item.id !== itemId);
-  renderItems(items);
-}
+function makeDish(recipeName) {
+  const adjustedTime = getAdjustedCookingTime(recipeName);
+  if (adjustedTime !== null) {
+    const cook = getCookByRecipe(recipeName);
+    if (cook) {
+      alert(
+        `Cooking ${recipeName} by ${
+          cook.name
+        } will take approximately ${adjustedTime.toFixed(2)} seconds.`
+      );
+    }
 
-function handleDeleteClick(e) {
-  const listItemElem = e.target.closest(".js-list-item");
-  const itemId = Number(listItemElem.dataset.itemid);
-  deleteItem(itemId);
-}
-
-refs.list.addEventListener("click", (e) => {
-  if (e.target.classList.contains("js-delete-btn")) {
-    handleDeleteClick(e);
-  }
-});
-
-refs.addBtn.addEventListener("click", handelAdd);
-
-function handleCheckboxChange(e) {
-  const checked = e.target.checked;
-  const listItemElem = e.target.closest(".js-list-item");
-  const itemId = Number(listItemElem.dataset.itemid);
-  updateItem(itemId, checked);
-}
-
-refs.list.addEventListener("click", (e) => {
-  if (e.target.classList.contains("js-item-checkbox")) {
-    handleCheckboxChange(e);
-  }
-});
-
-refs.expBtn.addEventListener("click", () => {
-  console.log(items);
-});
-
-function handleKeyDown(e) {
-  if (e.code === "KeyS" && e.ctrlKey) {
-    e.preventDefault();
-    handelAdd();
+    // TODO: Simulate cooking time with promise
+    // Promise should resolve with recipe name after adjusted time
+    const serving = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(recipeName);
+      }, Number(adjustedTime.toFixed(2)) * 1000);
+    });
+    return serving;
+  } else {
+    alert(`Recipe ${recipeName} not found.`);
+    const agreement = prompt(`Enter *yes* if you want to try again`);
+    if (agreement.toLowerCase() === "yes") {
+      const recipeName = prompt(
+        `Enter the recipe name from the menu:\n${menu}`
+      );
+      makeDish(recipeName).then((name) =>
+        alert(`${name} is ready! Enjoy your meal!`)
+      );
+    }
   }
 }
 
-function setupShortCuts() {
-  window.removeEventListener("keydown", handleKeyDown);
-  window.addEventListener("keydown", handleKeyDown);
-}
+const menu = recipes.map((recipe) => recipe.name).join("\n");
 
-setupShortCuts();
+const recipeName = prompt(`Enter the recipe name from the menu:\n${menu}`);
+//makeDish(recipeName);
+// TODO: Uncomment the line below to test the function
+makeDish(recipeName).then((name) =>
+  alert(`${name} is ready! Enjoy your meal!`)
+);
